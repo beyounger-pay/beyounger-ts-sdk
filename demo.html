@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Title</title>
+    <style>
+      .btn {
+        width: 130px;
+        height: 40px;
+        color: #fff;
+        border-radius: 5px;
+        padding: 10px 25px;
+        font-family: "Lato", sans-serif;
+        font-weight: 500;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        display: inline-block;
+        box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, 0.5),
+          7px 7px 20px 0px rgba(0, 0, 0, 0.1),
+          4px 4px 5px 0px rgba(0, 0, 0, 0.1);
+        outline: none;
+      }
+
+      /* 3 */
+      .btn-3 {
+        background: rgb(0, 172, 238);
+        background: linear-gradient(
+          0deg,
+          rgba(0, 172, 238, 1) 0%,
+          rgba(2, 126, 251, 1) 100%
+        );
+        width: 130px;
+        height: 40px;
+        line-height: 42px;
+        padding: 0;
+        border: none;
+      }
+      .btn-3 span {
+        position: relative;
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      .btn-3:before,
+      .btn-3:after {
+        position: absolute;
+        content: "";
+        right: 0;
+        top: 0;
+        background: rgba(2, 126, 251, 1);
+        transition: all 0.3s ease;
+      }
+      .btn-3:before {
+        height: 0%;
+        width: 2px;
+      }
+      .btn-3:after {
+        width: 0%;
+        height: 2px;
+      }
+      .btn-3:hover {
+        background: transparent;
+        box-shadow: none;
+      }
+      .btn-3:hover:before {
+        height: 100%;
+      }
+      .btn-3:hover:after {
+        width: 100%;
+      }
+      .btn-3 span:hover {
+        color: rgba(2, 126, 251, 1);
+      }
+      .btn-3 span:before,
+      .btn-3 span:after {
+        position: absolute;
+        content: "";
+        left: 0;
+        bottom: 0;
+        background: rgba(2, 126, 251, 1);
+        transition: all 0.3s ease;
+      }
+      .btn-3 span:before {
+        width: 2px;
+        height: 0%;
+      }
+      .btn-3 span:after {
+        width: 0%;
+        height: 2px;
+      }
+      .btn-3 span:hover:before {
+        height: 100%;
+      }
+      .btn-3 span:hover:after {
+        width: 100%;
+      }
+      .line{
+        flex:1;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      body,html{
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: antiquewhite;
+      }
+      #app{
+        width: 300px;
+        min-height: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items:center;
+        justify-content: flex-start;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="./lib/browser.js"></script>
+
+    <div id="app">
+      <div class="line">
+        <div class="data">
+            <div class="name">OrderId</div>
+            <div id="order-id">-</div>
+          </div>
+        <button class="btn btn-3" onclick="payment()">
+          <span>payment</span>
+        </button>
+      </div>
+    </div>
+    <script>
+      const merchantId = "d73d82c2801b47c8b5247ad9344d5711";
+      const apiSecret = "61a02d15-760d-41ca-8126-60cbb77728c8";
+      const payment = () => {
+        Beyounger.Payment({
+          url: "/api/v1/payment",
+          merchantId,
+          apiSecret,
+          merchantOrderId: Beyounger.createUUID(),
+          timStamp: Date.now(),
+        }).then((res) => {
+        
+          console.log(res);
+          if(res.result){
+            document.querySelector("#order-id").innerHTML = `
+            <a href="${res.result.redirect_url}" target="_blank"> ${res.result.order_id}<a>
+            `
+          }
+        });
+      };
+    </script>
+  </body>
+</html>
