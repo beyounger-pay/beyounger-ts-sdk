@@ -27,8 +27,12 @@ interface BeyoungerObj {
 
 async function fetchData(data: fetchDataParams) {
   const { method, url, req, authorizationStr } = data;
+  let apiURL = `${baseUrl}${url}`
+  if(url.indexOf('http') > -1){
+    apiURL = url
+  }
   // Default options are marked with *
-  const response = await fetch(`${baseUrl}${url}`, {
+  const response = await fetch(apiURL , {
     method: method, // *GET, POST, PUT, DELETE, etc.
     mode: "cors", // no-cors, *cors, same-origin
     cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
