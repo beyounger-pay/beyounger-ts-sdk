@@ -1,6 +1,8 @@
 import {  SHA512, WordArray } from "crypto-js";
+
 // const crypto = require('crypto')
 const baseUrl = "https://api.beyounger.com";
+const SIGN_SEPARATOR = ":"
 interface fetchDataParams{
   method: "POST" | "GET" | "PUT" | "DELETE",
   url: string,
@@ -62,6 +64,7 @@ const createUUID = () => {
   result[8] = result[13] = result[18] = result[23] = "-";
   return result.join("");
 };
+
 
 const getReqBodyObj = (options: ReqBody): string => {
   const { orderId } = options;
@@ -127,7 +130,7 @@ const getSignature = (SignatureParams: BeyoungerObj["SignatureParams"]) => {
 };
 
 const generateAuth = (BeyoungerObj: BeyoungerObj["Auth"]): string => {
-  const SIGN_SEPARATOR = ":";
+
   const { merchantId, timStamp, sign } = BeyoungerObj;
   const authorizationStr = `${merchantId}${SIGN_SEPARATOR}${timStamp}${SIGN_SEPARATOR}${sign}`;
 
@@ -181,4 +184,44 @@ const Payment = (paymentOptions: paymentOptions) => {
   })
 };
 
-export { Payment , createUUID };
+interface chooseOptions {
+  url: string,
+  processor: string,
+  orderId: string,
+  timStamp: number,
+  merchantId: string,
+  apiSecret: string,
+}
+
+const Checkout = () => {
+
+}
+
+const chooseChannel = (chooseOptions: chooseOptions) => {
+  const { url ,  orderId ,timStamp , processor ,merchantId , apiSecret} = chooseOptions
+  if(!orderId){
+    alert(`orderId is illegal`)
+    return ''
+  }
+  const req: any = {
+    id: orderId,
+    processor: processor,
+  }
+  const signature = `${merchantId}&${apiSecret}&${timStamp}`
+  const sign = SHA512(signature)
+
+
+  const authorizationStr =  generateAuth({
+    merchantId,
+    timStamp,
+    sign,
+  });
+  return fetchData({
+    method: "POST",
+    authorizationStr,
+    url,
+    req
+  })
+}
+
+export { Payment , createUUID , chooseChannel , Checkout};
