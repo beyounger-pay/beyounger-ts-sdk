@@ -18,29 +18,15 @@
           <span>payment</span>
         </button>
       </div>
-      <div class="line">
-        <div class="data">
-            <div class="name">processor</div>
-            <input id="processor" value="nextpay_processor"></input>
-          </div>
-      </div>
-      <div class="line">
-        <div class="data">
-            <div class="name">OrderId</div>
-            <input id="choose-order"></input>
-          </div>
-        <button class="btn btn-15" onclick="choose()">
-          choose
-        </button>
-      </div>
+
     </div>
     <script>
-      const merchantId = "d73d82c2801b47c8b5247ad9344d5711";
+      const apiKey = "d73d82c2801b47c8b5247ad9344d5711";
       const apiSecret = "61a02d15-760d-41ca-8126-60cbb77728c8";
       const payment = () => {
         Beyounger.Payment({
           url: "/api/v1/payment",
-          merchantId,
+          apiKey,
           apiSecret,
           merchantOrderId: Beyounger.createUUID(),
           timStamp: Date.now(),
@@ -55,17 +41,7 @@
           }
         });
       };
-      const choose = () => {
-        
-        Beyounger.chooseChannel({
-          url: "/v1/choosePayment",
-          processor: document.querySelector("#processor").value,
-          orderId:  document.querySelector("#choose-order").value,
-          timStamp: Date.now(),
-          merchantId, 
-          apiSecret
-        })
-      }
+
     </script>
   </body>
 </html>
