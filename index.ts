@@ -11,12 +11,12 @@ interface fetchDataParams{
 }
 interface BeyoungerObj {
   Auth: {
-    merchantId: string;
+    apiKey: string;
     timStamp: number;
     sign: WordArray;
   };
   SignatureParams: {
-    merchantId: string;
+    apiKey: string;
     cust_order_id: string;
     amount: string;
     currency: string;
@@ -76,7 +76,7 @@ const getReqBodyObj = (options: ReqBody): string => {
     currency: "USD",
     amount: "100.05",
     cust_order_id: orderId,
-    payment_method: "paypal",
+    payment_method: "creditcard",
     merchant_name: "test-api-name",
     site_id: 1,
     return_url: "https://api.beyounger.com/status.html",
@@ -126,17 +126,17 @@ const getReqBodyObj = (options: ReqBody): string => {
 };
 
 const getSignature = (SignatureParams: BeyoungerObj["SignatureParams"]) => {
-  const { merchantId, cust_order_id, amount, currency, apiSecret, timStamp } =
+  const { apiKey, cust_order_id, amount, currency, apiSecret, timStamp } =
     SignatureParams;
-  const signature = `${merchantId}&${cust_order_id}&${amount}&${currency}&${apiSecret}&${timStamp}`;
+  const signature = `${apiKey}&${cust_order_id}&${amount}&${currency}&${apiSecret}&${timStamp}`;
 
   return SHA512(signature);
 };
 
 const generateAuth = (BeyoungerObj: BeyoungerObj["Auth"]): string => {
 
-  const { merchantId, timStamp, sign } = BeyoungerObj;
-  const authorizationStr = `${merchantId}${SIGN_SEPARATOR}${timStamp}${SIGN_SEPARATOR}${sign}`;
+  const { apiKey, timStamp, sign } = BeyoungerObj;
+  const authorizationStr = `${apiKey}${SIGN_SEPARATOR}${timStamp}${SIGN_SEPARATOR}${sign}`;
 
   return authorizationStr;
 };
@@ -144,7 +144,7 @@ const generateAuth = (BeyoungerObj: BeyoungerObj["Auth"]): string => {
 export default generateAuth;
 interface paymentOptions  {
   url: string,
-  merchantId : string,
+  apiKey : string,
   apiSecret: string,
   timStamp: number,
   merchantOrderId: string
@@ -152,7 +152,7 @@ interface paymentOptions  {
 }
 const Payment = (paymentOptions: paymentOptions) => {
   const defaultOptions = {
-    merchantId: "d73d82c2801b47c8b5247ad9344d5711",
+    apiKey: "d73d82c2801b47c8b5247ad9344d5711",
     url: "/api/v1/payment",
     apiSecret : "61a02d15-760d-41ca-8126-60cbb77728c8",
     timStamp : Date.now(),
@@ -160,14 +160,14 @@ const Payment = (paymentOptions: paymentOptions) => {
   }
   const mergeOptions = Object.assign({}, defaultOptions, paymentOptions);
   
-  const {url , apiSecret , timStamp , merchantOrderId , merchantId} = mergeOptions;
+  const {url , apiSecret , timStamp , merchantOrderId , apiKey} = mergeOptions;
 
   const req:any = getReqBodyObj({
     orderId: merchantOrderId
   })
 
   const sign = getSignature({
-    merchantId,
+    apiKey,
     apiSecret,
     timStamp,
     cust_order_id: req.cust_order_id,
@@ -175,7 +175,7 @@ const Payment = (paymentOptions: paymentOptions) => {
     currency: req.currency,
   });
   const authorizationStr = generateAuth({
-    merchantId,
+    apiKey,
     timStamp,
     sign,
   });
@@ -188,44 +188,7 @@ const Payment = (paymentOptions: paymentOptions) => {
   })
 };
 
-interface chooseOptions {
-  url: string,
-  processor: string,
-  orderId: string,
-  timStamp: number,
-  merchantId: string,
-  apiSecret: string,
-}
-
-const Checkout = () => {
-
-}
-
-const chooseChannel = (chooseOptions: chooseOptions) => {
-  const { url ,  orderId ,timStamp , processor ,merchantId , apiSecret} = chooseOptions
-  if(!orderId){
-    alert(`orderId is illegal`)
-    return ''
-  }
-  const req: any = {
-    id: orderId,
-    processor: processor,
-  }
-  const signature = `${merchantId}&${apiSecret}&${timStamp}`
-  const sign = SHA512(signature)
 
 
-  const authorizationStr =  generateAuth({
-    merchantId,
-    timStamp,
-    sign,
-  });
-  return fetchData({
-    method: "POST",
-    authorizationStr,
-    url,
-    req
-  })
-}
 
-export { Payment , createUUID , chooseChannel , Checkout};
+export { Payment , createUUID};
